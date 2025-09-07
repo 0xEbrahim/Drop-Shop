@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @RequestMapping("${api.prefix}/images")
@@ -28,7 +29,7 @@ public class ImageController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse> saveImages(@RequestParam List<MultipartFile> files,@RequestParam Long productId) {
+    public ResponseEntity<ApiResponse> saveImages(@RequestBody List<MultipartFile> files,@RequestParam Long productId) {
         try{
             List<ImageDto> imagesDto = imageService.saveImage(files, productId);
             return ResponseEntity.ok(new ApiResponse("Success", imagesDto));
@@ -46,5 +47,28 @@ public class ImageController {
                 .contentType(MediaType.parseMediaType(img.getFileType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+img.getFileName() +"\"")
                 .body(resource);
+    }
+
+    @PutMapping("/image/{imageId}/update")
+    public ResponseEntity<ApiResponse> updateImage(@PathVariable Long imageId, @RequestBody MultipartFile file){
+        try{
+            imageService.updateImageById(file, imageId);
+            return ResponseEntity
+                    .ok()
+                    .body(new ApiResponse("Updated Successfully", null));
+        }catch(Exception e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+    @DeleteMapping("/image/{imageId}/delete")
+    public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long imageId){
+        try{
+            imageService.deleteImageById(imageId);
+            return ResponseEntity
+                    .ok()
+                    .body(new ApiResponse("Deleted Successfully", null));
+        }catch(Exception e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
     }
 }
