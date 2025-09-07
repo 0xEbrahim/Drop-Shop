@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.rowset.serial.SerialBlob;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +63,7 @@ public class ImageService implements IImageService{
         }
         return savedImages;
     }
+    
 
     @Override
     public void deleteImageById(Long id) {
