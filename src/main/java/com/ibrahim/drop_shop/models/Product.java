@@ -1,10 +1,7 @@
 package com.ibrahim.drop_shop.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -13,6 +10,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity(name="products")
 public class Product {
     @Id
@@ -25,7 +23,7 @@ public class Product {
     private String description;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
