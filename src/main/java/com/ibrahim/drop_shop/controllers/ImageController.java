@@ -1,18 +1,18 @@
 package com.ibrahim.drop_shop.controllers;
 
+import com.ibrahim.drop_shop.models.Image;
 import com.ibrahim.drop_shop.response.ApiResponse;
 import com.ibrahim.drop_shop.services.image.DTO.ImageDto;
 import com.ibrahim.drop_shop.services.image.ImageService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -35,5 +35,16 @@ public class ImageController {
         }catch(Exception e){
        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Upload failed", e.getMessage()));
         }
+    }
+
+    @GetMapping("/image/download/{imageId}")
+    public ResponseEntity<ByteArrayResource> downloadImage(@PathVariable Long imageId) throws SQLException {
+        Image img = imageService.getImageById(imageId);
+        ByteArrayResource resource = new ByteArrayResource(img.getBlob().getBytes(1,(int)img.getBlob().length()));
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.parseMediaType(img.getFileType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+img.getFileName() +"\"")
+                .body(resource);
     }
 }
