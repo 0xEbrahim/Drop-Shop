@@ -31,7 +31,11 @@ public class ProductService implements IProductService{
 
     @Override
     public void deleteProductById(Long id) {
-         this.productRepository.findById(id).ifPresent(productRepository::delete);
+         this.productRepository
+                 .findById(id)
+                 .ifPresentOrElse(productRepository::delete, () -> {
+                     throw new NotFoundException("Product not found");
+                 });
     }
 
     @Override
@@ -41,22 +45,22 @@ public class ProductService implements IProductService{
 
     @Override
     public List<Product> getAllProducts() {
-        return List.of();
+        return productRepository.findAll();
     }
 
     @Override
-    public List<Product> getProductsByCategory(Long categoryId) {
-        return List.of();
+    public List<Product> getProductsByCategory(String category) {
+        return productRepository.findByCategoryName(category);
     }
 
     @Override
     public List<Product> getProductsByBrand(String brandName) {
-        return List.of();
+        return productRepository.findByBrand(brandName);
     }
 
     @Override
     public List<Product> getProductsByCategoryAndBrand(String category, String brand) {
-        return List.of();
+        return productRepository.findByCategoryNameAndBrand(category,brand);
     }
 
     @Override
