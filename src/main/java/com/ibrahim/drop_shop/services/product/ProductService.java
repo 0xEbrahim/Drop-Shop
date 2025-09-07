@@ -1,10 +1,23 @@
 package com.ibrahim.drop_shop.services.product;
 
+import com.ibrahim.drop_shop.exceptions.NotFoundException;
 import com.ibrahim.drop_shop.models.Product;
+import com.ibrahim.drop_shop.repositories.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ProductService implements IProductService{
+
+    private final ProductRepository productRepository;
+
+    @Autowired
+    public ProductService(ProductRepository productRepository){
+        this.productRepository = productRepository;
+    }
+
 
     @Override
     public Product addProduct(Product product) {
@@ -13,12 +26,12 @@ public class ProductService implements IProductService{
 
     @Override
     public Product getProductById(Long id) {
-        return null;
+        return this.productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product not found"));
     }
 
     @Override
     public void deleteProductById(Long id) {
-
+         this.productRepository.findById(id).ifPresent(productRepository::delete);
     }
 
     @Override
