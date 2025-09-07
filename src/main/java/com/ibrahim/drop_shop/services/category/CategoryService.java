@@ -24,14 +24,14 @@ public class CategoryService implements ICategoryService{
 
 
     @Override
-    public Optional<Category> addCategory(AddCategoryDto categoryDto) {
-        return Optional.ofNullable(Optional
-                .of(categoryDto)
-                .filter(c -> !categoryRepository.existsByName(categoryDto.getName()))
-                .map(category -> {
-                    Category newCategory = Category.builder().name(category.getName()).build();
-                    return categoryRepository.save(newCategory);
-                }).orElseThrow(() -> new AlreadyExistsException("Category already exists")));
+    public Category addCategory(AddCategoryDto categoryDto) {
+        if (categoryRepository.existsByName(categoryDto.getName())) {
+            throw new AlreadyExistsException("Category already exists");
+        }
+        Category category = Category.builder()
+                .name(categoryDto.getName())
+                .build();
+        return categoryRepository.save(category);
     }
 
     @Override

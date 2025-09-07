@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ICategoryService {
-    Optional<Category> addCategory(AddCategoryDto categoryDto);
+    Category addCategory(AddCategoryDto categoryDto);
     Category getCategoryById(Long id);
     Category getCategoryByName(String name);
     Category updateCategory(AddCategoryDto categoryDto, Long id);
