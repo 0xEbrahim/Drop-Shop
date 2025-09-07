@@ -6,6 +6,7 @@ import com.ibrahim.drop_shop.models.Product;
 import com.ibrahim.drop_shop.repositories.CategoryRepository;
 import com.ibrahim.drop_shop.repositories.ProductRepository;
 import com.ibrahim.drop_shop.services.product.DTO.AddProductDto;
+import com.ibrahim.drop_shop.services.product.DTO.UpdateProductDto;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,14 +48,14 @@ public class ProductService implements IProductService{
 
     @Override
     public Product getProductById(Long id) {
-        return this.productRepository
+        return productRepository
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
     }
 
     @Override
     public void deleteProductById(Long id) {
-         this.productRepository
+         productRepository
                  .findById(id)
                     .ifPresentOrElse(productRepository::delete, () -> {
                         throw new NotFoundException("Product not found");
@@ -62,8 +63,24 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public Product updateProduct(Product product, Long id) {
-        return null;
+    public Product updateProduct(UpdateProductDto productDto, Long id) {
+        Product product = productRepository
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException("Product not found"));
+        return productRepository.save(updateExistingProduct(product, productDto));
+    }
+
+    private Product updateExistingProduct(Product curProduct, UpdateProductDto productDto) {
+        curProduct.setBrand(productDto.getBrand());
+        curProduct.setDescription(productDto.getDescription());
+        curProduct.setName(productDto.getName());
+        curProduct.setInventory(productDto.getInventory());
+        curProduct.setPrice(productDto.getPrice());
+        Category category = categoryRepository
+                .findById(productDto.getCategoryId())
+                .orElseThrow(() -> new NotFoundException("Category Not found"));
+        curProduct.setCategory(category);
+        return curProduct;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.ibrahim.drop_shop.services.product;
 
 import com.ibrahim.drop_shop.models.Product;
 import com.ibrahim.drop_shop.services.product.DTO.AddProductDto;
+import com.ibrahim.drop_shop.services.product.DTO.UpdateProductDto;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ public interface IProductService {
     Product addProduct(AddProductDto product);
     Product getProductById(Long id);
     void deleteProductById(Long id);
-    Product updateProduct(Product product, Long id);
+    Product updateProduct(UpdateProductDto product, Long id);
     List<Product> getAllProducts();
     List<Product> getProductsByCategory(String category);
     List<Product> getProductsByBrand(String brandName);
