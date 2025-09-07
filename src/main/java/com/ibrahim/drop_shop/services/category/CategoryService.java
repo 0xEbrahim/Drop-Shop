@@ -1,5 +1,6 @@
 package com.ibrahim.drop_shop.services.category;
 
+import com.ibrahim.drop_shop.exceptions.NotFoundException;
 import com.ibrahim.drop_shop.models.Category;
 import com.ibrahim.drop_shop.repositories.CategoryRepository;
 import com.ibrahim.drop_shop.services.category.DTO.AddCategoryDto;
@@ -24,12 +25,14 @@ public class CategoryService implements ICategoryService{
 
     @Override
     public Category getCategoryById(Long id) {
-
+        return categoryRepository
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException("Category not found"));
     }
 
     @Override
     public Category getCategoryByName(String name) {
-        return null;
+        return categoryRepository.findByName(name);
     }
 
     @Override
@@ -39,11 +42,15 @@ public class CategoryService implements ICategoryService{
 
     @Override
     public void deleteCategoryById(Long id) {
-
+         categoryRepository
+                 .findById(id)
+                 .ifPresentOrElse(categoryRepository :: delete, () -> {
+                     throw new NotFoundException("Category not found");
+                 });
     }
 
     @Override
     public List<Category> getAllCategories() {
-        return List.of();
+        return categoryRepository.findAll();
     }
 }
