@@ -3,7 +3,7 @@ package com.ibrahim.drop_shop.controllers;
 import com.ibrahim.drop_shop.models.Image;
 import com.ibrahim.drop_shop.response.ApiResponse;
 import com.ibrahim.drop_shop.services.image.DTO.ImageDto;
-import com.ibrahim.drop_shop.services.image.ImageService;
+import com.ibrahim.drop_shop.services.image.IImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -16,16 +16,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-
 @RestController
 @RequestMapping("${api.prefix}/images")
 public class ImageController {
-    private final ImageService imageService;
+    private final IImageService imageService;
 
     @Autowired
-    public ImageController(ImageService imageService){
+    public ImageController(IImageService imageService){
         this.imageService = imageService;
     }
 
