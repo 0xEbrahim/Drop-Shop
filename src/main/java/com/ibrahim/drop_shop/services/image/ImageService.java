@@ -4,8 +4,11 @@ import com.ibrahim.drop_shop.exceptions.NotFoundException;
 import com.ibrahim.drop_shop.models.Image;
 import com.ibrahim.drop_shop.models.Product;
 import com.ibrahim.drop_shop.repositories.ImageRepository;
-import com.ibrahim.drop_shop.services.image.DTO.ImageDto;
+import com.ibrahim.drop_shop.services.image.DTO.ImageResponseDto;
+import com.ibrahim.drop_shop.services.product.DTO.ProductResponseDto;
 import com.ibrahim.drop_shop.services.product.IProductService;
+import com.ibrahim.drop_shop.utils.ResponseTransformer;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,10 +25,12 @@ public class ImageService implements IImageService{
 
     private final ImageRepository imageRepository;
     private final IProductService productService;
+    private final ResponseTransformer responseTransformer;
     @Autowired
-    public ImageService(ImageRepository imageRepository, IProductService productService){
+    public ImageService(ImageRepository imageRepository, IProductService productService, ResponseTransformer responseTransformer){
         this.imageRepository = imageRepository;
         this.productService = productService;
+        this.responseTransformer = responseTransformer;
     }
 
     @Override
@@ -36,11 +41,12 @@ public class ImageService implements IImageService{
     }
 
     @Override
-    public List<ImageDto> saveImage(List<MultipartFile> files, Long productId) {
-        Product product = productService.getProductById(productId);
-        List<ImageDto> savedImages = new ArrayList<>();
+    @Transactional
+    public List<ImageResponseDto> saveImage(List<MultipartFile> files, Long productId) throws SQLException, IOException {
+        ProductResponseDto productDto = productService.getProductById(productId);
+        Product product =  responseTransformer.transformFromDto(productDto, Product.class);
+        List<ImageResponseDto> savedImages = new ArrayList<>();
         for(MultipartFile file: files) {
-            try{
                Image image = Image
                        .builder()
                        .fileName(file.getOriginalFilename())
@@ -49,19 +55,11 @@ public class ImageService implements IImageService{
                        .product(product)
                        .build();
                String baseDLUrl = "api/v1/images/image/download/";
-               image.setDownloadUrl(baseDLUrl+image.getId());
                Image savedImg = imageRepository.save(image);
-               savedImg.setDownloadUrl(baseDLUrl + savedImg.getDownloadUrl());
-                ImageDto imgDto = ImageDto
-                        .builder()
-                        .id(savedImg.getId())
-                        .downloadUrl(savedImg.getDownloadUrl())
-                        .fileName(savedImg.getFileName())
-                        .build();
+               savedImg.setDownloadUrl(baseDLUrl + savedImg.getId());
+               savedImg = imageRepository.save(image);
+                ImageResponseDto imgDto = responseTransformer.transformToDto(savedImg, ImageResponseDto.class);
                 savedImages.add(imgDto);
-            }catch(Exception e){
-                throw new RuntimeException(e.getMessage());
-            }
         }
         return savedImages;
     }
@@ -76,10 +74,12 @@ public class ImageService implements IImageService{
 
     @Override
     public void updateImageById(MultipartFile file, Long id) throws IOException, SQLException {
-            Image image = getImageById(id);
-            image.setFileName(file.getOriginalFilename());
-            image.setFileType(file.getContentType());
-            image.setBlob(new SerialBlob(file.getBytes()));
+        Image image = getImageById(id);
+            if( file != null) {
+                image.setFileName(file.getOriginalFilename());
+                image.setFileType(file.getContentType());
+                image.setBlob(new SerialBlob(file.getBytes()));
+            }
             imageRepository.save(image);
     }
 }

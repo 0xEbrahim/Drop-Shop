@@ -5,6 +5,9 @@ import com.ibrahim.drop_shop.exceptions.NotFoundException;
 import com.ibrahim.drop_shop.models.Category;
 import com.ibrahim.drop_shop.repositories.CategoryRepository;
 import com.ibrahim.drop_shop.services.category.DTO.AddCategoryDto;
+import com.ibrahim.drop_shop.services.category.DTO.CategoryResponseDto;
+import com.ibrahim.drop_shop.services.category.DTO.UpdateCategoryDto;
+import com.ibrahim.drop_shop.utils.ResponseTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,43 +19,52 @@ import java.util.Optional;
 public class CategoryService implements ICategoryService{
 
     private final CategoryRepository categoryRepository;
+    private final ResponseTransformer responseTransformer;
+
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository){
+    public CategoryService(CategoryRepository categoryRepository, ResponseTransformer responseTransformer){
         this.categoryRepository = categoryRepository;
+        this.responseTransformer = responseTransformer;
     }
 
 
     @Override
-    public Category addCategory(AddCategoryDto categoryDto) {
+    public CategoryResponseDto addCategory(AddCategoryDto categoryDto) {
         if (categoryRepository.existsByName(categoryDto.getName())) {
             throw new AlreadyExistsException("Category already exists");
         }
         Category category = Category.builder()
                 .name(categoryDto.getName())
                 .build();
-        return categoryRepository.save(category);
+        category = categoryRepository.save(category);
+        return responseTransformer.transformToDto(category, CategoryResponseDto.class);
     }
 
     @Override
-    public Category getCategoryById(Long id) {
-        return categoryRepository
+    public CategoryResponseDto getCategoryById(Long id) {
+        Category category =  categoryRepository
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Category not found"));
+        return responseTransformer.transformToDto(category, CategoryResponseDto.class);
     }
 
     @Override
-    public Category getCategoryByName(String name) {
-        return categoryRepository.findByName(name);
+    public CategoryResponseDto getCategoryByName(String name) {
+        Category category =  categoryRepository.findByName(name);
+        return responseTransformer.transformToDto(category, CategoryResponseDto.class);
     }
 
     @Override
-    public Category updateCategory(AddCategoryDto categoryDto, Long id) {
-        return Optional.ofNullable(getCategoryById(id))
-            .map(category -> {
+    public CategoryResponseDto updateCategory(UpdateCategoryDto categoryDto, Long id) {
+        Category category = categoryRepository
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+       if(categoryDto.getName() != null) {
             category.setName(categoryDto.getName());
-            return categoryRepository.save(category);
-        }).orElseThrow(() -> new NotFoundException("Category not found"));
+            categoryRepository.save(category);
+       }
+       return responseTransformer.transformToDto(category, CategoryResponseDto.class);
     }
 
     @Override
@@ -65,7 +77,13 @@ public class CategoryService implements ICategoryService{
     }
 
     @Override
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public List<CategoryResponseDto> getAllCategories() {
+        List<Category> categories = categoryRepository
+                .findAll();
+
+        return categories
+                .stream()
+                .map(c -> responseTransformer.transformToDto(c, CategoryResponseDto.class))
+                .toList();
     }
 }

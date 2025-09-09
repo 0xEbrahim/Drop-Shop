@@ -1,4 +1,4 @@
-package com.ibrahim.drop_shop.response;
+package com.ibrahim.drop_shop.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

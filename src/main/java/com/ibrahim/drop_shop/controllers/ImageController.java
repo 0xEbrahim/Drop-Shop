@@ -1,9 +1,10 @@
 package com.ibrahim.drop_shop.controllers;
 
 import com.ibrahim.drop_shop.models.Image;
-import com.ibrahim.drop_shop.response.ApiResponse;
-import com.ibrahim.drop_shop.services.image.DTO.ImageDto;
-import com.ibrahim.drop_shop.services.image.ImageService;
+import com.ibrahim.drop_shop.services.image.DTO.ImageResponseDto;
+import com.ibrahim.drop_shop.utils.ApiResponse;
+import com.ibrahim.drop_shop.services.image.IImageService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -16,26 +17,24 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-
 @RestController
 @RequestMapping("${api.prefix}/images")
 public class ImageController {
-    private final ImageService imageService;
+    private final IImageService imageService;
 
     @Autowired
-    public ImageController(ImageService imageService){
+    public ImageController(IImageService imageService){
         this.imageService = imageService;
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse> saveImages(@RequestBody List<MultipartFile> files,@RequestParam Long productId) {
-            List<ImageDto> imagesDto = imageService.saveImage(files, productId);
+    public ResponseEntity<ApiResponse> saveImages(@RequestBody List<MultipartFile> files,@RequestParam Long productId) throws SQLException, IOException {
+            List<ImageResponseDto> imagesDto = imageService.saveImage(files, productId);
             return ResponseEntity.ok(new ApiResponse("Success", imagesDto));
     }
 
     @GetMapping("/image/download/{imageId}")
+    @Transactional
     public ResponseEntity<ByteArrayResource> downloadImage(@PathVariable Long imageId) throws SQLException {
         Image img = imageService.getImageById(imageId);
         ByteArrayResource resource = new ByteArrayResource(img.getBlob().getBytes(1,(int)img.getBlob().length()));
