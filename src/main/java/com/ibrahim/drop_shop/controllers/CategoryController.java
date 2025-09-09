@@ -25,38 +25,38 @@ public class CategoryController {
 
     @GetMapping()
     public ResponseEntity<ApiResponse> getAllCategories() {
-        return ResponseEntity.status(201).body(new ApiResponse("Found", categoryService.getAllCategories()));
+        return ApiResponse.sendResponse("Found",HttpStatus.OK, categoryService.getAllCategories());
     }
 
     @PostMapping()
     public ResponseEntity<ApiResponse> createCategory(@RequestBody AddCategoryDto categoryDto) {
         CategoryResponseDto category = categoryService.addCategory(categoryDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("A new category has been created", category));
+        return ApiResponse.sendResponse("A new category has been created", HttpStatus.CREATED,  category);
     }
 
     @GetMapping("/name")
     public ResponseEntity<ApiResponse> getCategoryByName(@RequestParam("name") String name) {
         CategoryResponseDto category = categoryService.getCategoryByName(name);
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", category));
+        return ApiResponse.sendResponse("Found",HttpStatus.OK, category);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getCategoryById(@PathVariable("id") Long id) {
         CategoryResponseDto category = categoryService.getCategoryById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", category));
+        return ApiResponse.sendResponse("Found",HttpStatus.OK, category);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteCategoryById(@PathVariable("id") Long id) {
         categoryService.deleteCategoryById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Category has been deleted", null));
+        return ApiResponse.sendResponse("Category has been deleted",HttpStatus.OK, null);
 
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse> updateCategoryById(@RequestBody UpdateCategoryDto dto,  @PathVariable("id") Long id) {
         CategoryResponseDto category = categoryService.updateCategory(dto, id);
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Category has been updated", category));
+        return ApiResponse.sendResponse("Category has been updated", HttpStatus.OK,category);
     }
 
 }

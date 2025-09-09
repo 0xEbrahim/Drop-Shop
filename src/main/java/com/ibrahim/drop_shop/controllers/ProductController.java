@@ -27,48 +27,48 @@ public class ProductController {
     @PostMapping()
     public ResponseEntity<ApiResponse> createProduct(@RequestBody AddProductDto dto) {
         ProductResponseDto product = productService.addProduct(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Product has been created", product));
+        return ApiResponse.sendResponse("Product has been created",HttpStatus.CREATED, product);
     }
 
     @GetMapping()
     public ResponseEntity<ApiResponse> getProducts() {
         List<ProductResponseDto> products = productService.getAllProducts();
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", products));
+        return ApiResponse.sendResponse("Found", HttpStatus.OK, products);
     }
 
     @GetMapping("/category")
     public ResponseEntity<ApiResponse> getProductByCategoryName(@RequestParam("name") String name) {
         List<ProductResponseDto> products = productService.getProductsByCategory(name);
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", products));
+        return ApiResponse.sendResponse("Found", HttpStatus.OK, products);
     }
 
     @GetMapping("/brand")
     public ResponseEntity<ApiResponse> getProductByBrandName(@RequestParam("name") String name) {
         List<ProductResponseDto> products = productService.getProductsByBrand(name);
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", products));
+        return ApiResponse.sendResponse("Found", HttpStatus.OK, products);
     }
 
     @GetMapping("name")
     public ResponseEntity<ApiResponse> getProductByName(@RequestParam("name") String name){
         List<ProductResponseDto> products = productService.getProductByName(name);
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", products));
+        return ApiResponse.sendResponse("Found", HttpStatus.OK, products);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteProductById(@PathVariable("id") Long id) {
         productService.deleteProductById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Product has been deleted", null));
+        return ApiResponse.sendResponse("Product has been deleted", HttpStatus.OK, null);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<ApiResponse> getProductById(@PathVariable("id") Long id) {
         ProductResponseDto product = productService.getProductById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", product));
+        return ApiResponse.sendResponse("Found",HttpStatus.OK, product);
     }
 
     @PatchMapping("{id}")
     public ResponseEntity<ApiResponse> updateProductById(@RequestBody UpdateProductDto dto, @PathVariable("id") Long id) {
         ProductResponseDto product = productService.updateProduct(dto, id);
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Product has been updated", product));
+        return ApiResponse.sendResponse("Product has been updated", HttpStatus.OK, product);
     }
 }
