@@ -2,10 +2,7 @@ package com.ibrahim.drop_shop.models;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -15,6 +12,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity(name = "carts")
 public class Cart {
 
@@ -32,6 +30,12 @@ public class Cart {
         item.setCart(this);
         updateTotalAmount();
     }
+public void removeItem(CartItem item){
+    this.cartItems.remove(item);
+    item.setCart(this);
+    updateTotalAmount();
+
+}
 
     private void updateTotalAmount() {
         this.totalAmount = this.cartItems
