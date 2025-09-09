@@ -9,6 +9,7 @@ import com.ibrahim.drop_shop.repositories.CartRepository;
 import com.ibrahim.drop_shop.repositories.ProductRepository;
 import com.ibrahim.drop_shop.services.cartItem.DTO.AddItemToCartDto;
 import com.ibrahim.drop_shop.services.cartItem.DTO.CartItemResponseDto;
+import com.ibrahim.drop_shop.services.cartItem.DTO.RemoveItemFromCartDto;
 import com.ibrahim.drop_shop.utils.ResponseTransformer;
 import org.springframework.stereotype.Service;
 
@@ -65,14 +66,14 @@ public class CartItemService implements ICartItemService{
     }
 
     @Override
-    public void removeItemFromCart(Long cartId, Long productId) {
+    public void removeItemFromCart(RemoveItemFromCartDto dto) {
         Cart cart = cartRepository
-                .findById(cartId)
+                .findById(dto.getCartId())
                 .orElseThrow(() -> new NotFoundException("Cart not found"));
         CartItem cartItem = cart
                 .getCartItems()
                 .stream()
-                .filter(it -> it.getProduct().getId().equals(productId))
+                .filter(it -> it.getProduct().getId().equals(dto.getProductId()))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Item not found"));
         cart.removeItem(cartItem);
