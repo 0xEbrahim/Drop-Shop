@@ -5,6 +5,7 @@ import com.ibrahim.drop_shop.exceptions.NotFoundException;
 import com.ibrahim.drop_shop.models.Category;
 import com.ibrahim.drop_shop.repositories.CategoryRepository;
 import com.ibrahim.drop_shop.services.category.DTO.AddCategoryDto;
+import com.ibrahim.drop_shop.services.category.DTO.UpdateCategoryDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,12 +48,13 @@ public class CategoryService implements ICategoryService{
     }
 
     @Override
-    public Category updateCategory(AddCategoryDto categoryDto, Long id) {
-        return Optional.ofNullable(getCategoryById(id))
-            .map(category -> {
+    public Category updateCategory(UpdateCategoryDto categoryDto, Long id) {
+        Category category = getCategoryById(id);
+       if(categoryDto.getName() != null) {
             category.setName(categoryDto.getName());
-            return categoryRepository.save(category);
-        }).orElseThrow(() -> new NotFoundException("Category not found"));
+            categoryRepository.save(category);
+       }
+       return category;
     }
 
     @Override

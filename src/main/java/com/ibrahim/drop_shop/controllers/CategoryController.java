@@ -3,6 +3,7 @@ package com.ibrahim.drop_shop.controllers;
 import com.ibrahim.drop_shop.models.Category;
 import com.ibrahim.drop_shop.response.ApiResponse;
 import com.ibrahim.drop_shop.services.category.DTO.AddCategoryDto;
+import com.ibrahim.drop_shop.services.category.DTO.UpdateCategoryDto;
 import com.ibrahim.drop_shop.services.category.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,6 +50,12 @@ public class CategoryController {
         categoryService.deleteCategoryById(id);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Category has been deleted", null));
 
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse> updateCategoryById(@RequestBody UpdateCategoryDto dto,  @PathVariable("id") Long id) {
+        Category category = categoryService.updateCategory(dto, id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Category has been updated", category));
     }
 
 }
