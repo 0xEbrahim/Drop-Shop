@@ -7,10 +7,7 @@ import com.ibrahim.drop_shop.services.product.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,6 +25,30 @@ public class ProductController {
     public ResponseEntity<ApiResponse> getProducts() {
         List<Product> products = productService.getAllProducts();
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", products));
+    }
+
+    @GetMapping("/category")
+    public ResponseEntity<ApiResponse> getProductByCategoryName(@RequestParam("name") String name) {
+        List<Product> products = productService.getProductsByCategory(name);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", products));
+    }
+
+    @GetMapping("/brand")
+    public ResponseEntity<ApiResponse> getProductByBrandName(@RequestParam("name") String name) {
+        List<Product> products = productService.getProductsByBrand(name);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", products));
+    }
+
+    @GetMapping("name")
+    public ResponseEntity<ApiResponse> getProductByName(@RequestParam("name") String name){
+        List<Product> products = productService.getProductByName(name);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", products));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> deleteProductById(@PathVariable("id") Long id) {
+        productService.deleteProductById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Product has been deleted", null));
     }
 
     @GetMapping("{id}")
