@@ -24,4 +24,11 @@ public class Category {
 
     @OneToMany(mappedBy = "category")
     private List<Product> products;
+
+    @PreRemove
+    private void setProductsToNull() {
+        for(Product p : products){
+            p.setCategory(null);
+        }
+    }
 }

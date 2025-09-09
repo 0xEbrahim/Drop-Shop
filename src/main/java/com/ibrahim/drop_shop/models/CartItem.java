@@ -1,0 +1,38 @@
+package com.ibrahim.drop_shop.models;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.math.BigDecimal;
+
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity(name = "cart_items")
+public class CartItem {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private int quantity;
+
+    private BigDecimal unitPrice;
+
+    private BigDecimal totalPrice;
+
+    @ManyToOne()
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    @ManyToOne()
+    @JoinColumn(name = "cart_id", nullable = false)
+    Cart cart;
+
+    public void setTotalPrice() {
+        this.totalPrice = this.unitPrice.multiply(new BigDecimal(quantity));
+    }
+}

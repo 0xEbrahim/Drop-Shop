@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,16 +50,12 @@ public class ImageController {
     public ResponseEntity<ApiResponse> updateImage(@PathVariable Long imageId, @RequestBody MultipartFile file) throws SQLException, IOException {
 
             imageService.updateImageById(file, imageId);
-            return ResponseEntity
-                    .ok()
-                    .body(new ApiResponse("Updated Successfully", null));
+            return ApiResponse.sendResponse("Updated Successfully",HttpStatus.OK, null);
 
     }
     @DeleteMapping("/image/{imageId}/delete")
     public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long imageId){
             imageService.deleteImageById(imageId);
-            return ResponseEntity
-                    .ok()
-                    .body(new ApiResponse("Deleted Successfully", null));
+            return ApiResponse.sendResponse("Deleted Successfully", HttpStatus.OK,null);
     }
 }
