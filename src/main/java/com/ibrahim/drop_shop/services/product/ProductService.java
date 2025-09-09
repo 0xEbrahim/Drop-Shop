@@ -6,8 +6,11 @@ import com.ibrahim.drop_shop.models.Product;
 import com.ibrahim.drop_shop.repositories.CategoryRepository;
 import com.ibrahim.drop_shop.repositories.ProductRepository;
 import com.ibrahim.drop_shop.services.product.DTO.AddProductDto;
+import com.ibrahim.drop_shop.services.product.DTO.ProductResponseDto;
 import com.ibrahim.drop_shop.services.product.DTO.UpdateProductDto;
+import com.ibrahim.drop_shop.utils.ResponseTransformer;
 import org.jetbrains.annotations.NotNull;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,21 +21,25 @@ public class ProductService implements IProductService{
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ResponseTransformer responseTransformer;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository){
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, ResponseTransformer responseTransformer){
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.responseTransformer = responseTransformer;
     }
 
 
     @Override
-    public Product addProduct(@NotNull AddProductDto productData) {
+    public ProductResponseDto addProduct(@NotNull AddProductDto productData) {
         Category category = categoryRepository
                 .findById(productData.getCategoryId())
                 .orElseThrow(() -> new NotFoundException("Category Not found"));
-        return  productRepository.save(createProduct(productData, category));
+        Product product = productRepository.save(createProduct(productData, category));
+        return responseTransformer.transformToDto(product, ProductResponseDto.class);
     }
+
 
     private Product createProduct(@NotNull AddProductDto productData, Category category) {
         Product product = Product.builder()
@@ -49,10 +56,11 @@ public class ProductService implements IProductService{
 
 
     @Override
-    public Product getProductById(Long id) {
-        return productRepository
+    public ProductResponseDto getProductById(Long id) {
+        Product product = productRepository
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
+        return responseTransformer.transformToDto(product, ProductResponseDto.class);
     }
 
     @Override
@@ -65,12 +73,13 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public Product updateProduct(UpdateProductDto productDto, Long id) {
+    public ProductResponseDto updateProduct(UpdateProductDto productDto, Long id) {
         Product product = productRepository
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
 
-        return productRepository.save(updateExistingProduct(product, productDto));
+        product = productRepository.save(updateExistingProduct(product, productDto));
+        return responseTransformer.transformToDto(product, ProductResponseDto.class);
     }
 
     private Product updateExistingProduct(Product curProduct, UpdateProductDto productDto) {
@@ -97,33 +106,57 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductResponseDto> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+        return products
+                .stream()
+                .map(product -> responseTransformer.transformToDto(product, ProductResponseDto.class))
+                .toList();
     }
 
     @Override
-    public List<Product> getProductsByCategory(String category) {
-        return productRepository.findByCategoryName(category);
+    public List<ProductResponseDto> getProductsByCategory(String category) {
+        List<Product> products = productRepository.findByCategoryName(category);
+        return products
+                .stream()
+                .map(product -> responseTransformer.transformToDto(product, ProductResponseDto.class))
+                .toList();
     }
 
     @Override
-    public List<Product> getProductsByBrand(String brandName) {
-        return productRepository.findByBrand(brandName);
+    public List<ProductResponseDto> getProductsByBrand(String brandName) {
+        List<Product> products = productRepository.findByBrand(brandName);
+        return products
+                .stream()
+                .map(product -> responseTransformer.transformToDto(product, ProductResponseDto.class))
+                .toList();
     }
 
     @Override
-    public List<Product> getProductsByCategoryAndBrand(String category, String brand) {
-        return productRepository.findByCategoryNameAndBrand(category,brand);
+    public List<ProductResponseDto> getProductsByCategoryAndBrand(String category, String brand) {
+        List<Product> products = productRepository.findByCategoryNameAndBrand(category,brand);
+        return products
+                .stream()
+                .map(product -> responseTransformer.transformToDto(product, ProductResponseDto.class))
+                .toList();
     }
 
     @Override
-    public List<Product> getProductByName(String name) {
-        return productRepository.findByName(name);
+    public List<ProductResponseDto> getProductByName(String name) {
+        List<Product> products = productRepository.findByName(name);
+        return products
+                .stream()
+                .map(product -> responseTransformer.transformToDto(product, ProductResponseDto.class))
+                .toList();
     }
 
     @Override
-    public List<Product> getProductByBrandAndName(String brand, String name) {
-        return productRepository.findByBrandAndName(brand, name);
+    public List<ProductResponseDto> getProductByBrandAndName(String brand, String name) {
+        List<Product> products = productRepository.findByBrandAndName(brand, name);
+        return products
+                .stream()
+                .map(product -> responseTransformer.transformToDto(product, ProductResponseDto.class))
+                .toList();
     }
 
     @Override

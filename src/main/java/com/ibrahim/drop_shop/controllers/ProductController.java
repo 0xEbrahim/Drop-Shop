@@ -2,8 +2,10 @@ package com.ibrahim.drop_shop.controllers;
 
 
 import com.ibrahim.drop_shop.models.Product;
-import com.ibrahim.drop_shop.response.ApiResponse;
+import com.ibrahim.drop_shop.utils.ApiResponse;
 import com.ibrahim.drop_shop.services.product.DTO.AddProductDto;
+import com.ibrahim.drop_shop.services.product.DTO.ProductResponseDto;
+import com.ibrahim.drop_shop.services.product.DTO.UpdateProductDto;
 import com.ibrahim.drop_shop.services.product.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,31 +26,31 @@ public class ProductController {
 
     @PostMapping()
     public ResponseEntity<ApiResponse> createProduct(@RequestBody AddProductDto dto) {
-        Product product = productService.addProduct(dto);
+        ProductResponseDto product = productService.addProduct(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Product has been created", product));
     }
 
     @GetMapping()
     public ResponseEntity<ApiResponse> getProducts() {
-        List<Product> products = productService.getAllProducts();
+        List<ProductResponseDto> products = productService.getAllProducts();
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", products));
     }
 
     @GetMapping("/category")
     public ResponseEntity<ApiResponse> getProductByCategoryName(@RequestParam("name") String name) {
-        List<Product> products = productService.getProductsByCategory(name);
+        List<ProductResponseDto> products = productService.getProductsByCategory(name);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", products));
     }
 
     @GetMapping("/brand")
     public ResponseEntity<ApiResponse> getProductByBrandName(@RequestParam("name") String name) {
-        List<Product> products = productService.getProductsByBrand(name);
+        List<ProductResponseDto> products = productService.getProductsByBrand(name);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", products));
     }
 
     @GetMapping("name")
     public ResponseEntity<ApiResponse> getProductByName(@RequestParam("name") String name){
-        List<Product> products = productService.getProductByName(name);
+        List<ProductResponseDto> products = productService.getProductByName(name);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", products));
     }
 
@@ -60,8 +62,13 @@ public class ProductController {
 
     @GetMapping("{id}")
     public ResponseEntity<ApiResponse> getProductById(@PathVariable("id") Long id) {
-        Product product = productService.getProductById(id);
+        ProductResponseDto product = productService.getProductById(id);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", product));
     }
 
+    @PatchMapping("{id}")
+    public ResponseEntity<ApiResponse> updateProductById(@RequestBody UpdateProductDto dto, @PathVariable("id") Long id) {
+        ProductResponseDto product = productService.updateProduct(dto, id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Product has been updated", product));
+    }
 }
