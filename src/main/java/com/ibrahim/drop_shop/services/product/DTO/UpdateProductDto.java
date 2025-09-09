@@ -9,7 +9,7 @@ public class UpdateProductDto {
     private String name;
     private String brand;
     private BigDecimal price;
-    private int inventory;
+    private Integer inventory;
     private String description;
     private Long categoryId;
 }

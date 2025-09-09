@@ -3,6 +3,7 @@ package com.ibrahim.drop_shop.controllers;
 
 import com.ibrahim.drop_shop.models.Product;
 import com.ibrahim.drop_shop.response.ApiResponse;
+import com.ibrahim.drop_shop.services.product.DTO.AddProductDto;
 import com.ibrahim.drop_shop.services.product.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,12 @@ public class ProductController {
     @Autowired
     public ProductController(IProductService productService){
         this.productService = productService;
+    }
+
+    @PostMapping()
+    public ResponseEntity<ApiResponse> createProduct(@RequestBody AddProductDto dto) {
+        Product product = productService.addProduct(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Product has been created", product));
     }
 
     @GetMapping()
@@ -56,6 +63,5 @@ public class ProductController {
         Product product = productService.getProductById(id);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Found", product));
     }
-
 
 }

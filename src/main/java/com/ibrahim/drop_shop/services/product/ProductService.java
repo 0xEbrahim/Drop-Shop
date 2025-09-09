@@ -35,7 +35,7 @@ public class ProductService implements IProductService{
     }
 
     private Product createProduct(@NotNull AddProductDto productData, Category category) {
-        return Product.builder()
+        Product product = Product.builder()
                 .name(productData.getName())
                 .brand(productData.getBrand())
                 .category(category)
@@ -43,6 +43,8 @@ public class ProductService implements IProductService{
                 .price(productData.getPrice())
                 .inventory(productData.getInventory())
                 .build();
+        product = productRepository.save(product);
+        return product;
     }
 
 
@@ -67,15 +69,26 @@ public class ProductService implements IProductService{
         Product product = productRepository
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
+
         return productRepository.save(updateExistingProduct(product, productDto));
     }
 
     private Product updateExistingProduct(Product curProduct, UpdateProductDto productDto) {
-        curProduct.setBrand(productDto.getBrand());
-        curProduct.setDescription(productDto.getDescription());
-        curProduct.setName(productDto.getName());
-        curProduct.setInventory(productDto.getInventory());
-        curProduct.setPrice(productDto.getPrice());
+        if(productDto.getName() != null){
+            curProduct.setName(productDto.getName());
+        }
+        if(productDto.getPrice() != null){
+            curProduct.setPrice(productDto.getPrice());
+        }
+        if(productDto.getDescription() != null) {
+            curProduct.setDescription(productDto.getDescription());
+        }
+        if(productDto.getBrand() != null){
+            curProduct.setBrand(productDto.getBrand());
+        }
+        if(productDto.getInventory() != null){
+            curProduct.setInventory(productDto.getInventory());
+        }
         Category category = categoryRepository
                 .findById(productDto.getCategoryId())
                 .orElseThrow(() -> new NotFoundException("Category Not found"));
