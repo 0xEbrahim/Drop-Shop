@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -30,12 +31,8 @@ public class ImageController {
 
     @PostMapping("/upload")
     public ResponseEntity<ApiResponse> saveImages(@RequestBody List<MultipartFile> files,@RequestParam Long productId) {
-        try{
             List<ImageDto> imagesDto = imageService.saveImage(files, productId);
             return ResponseEntity.ok(new ApiResponse("Success", imagesDto));
-        }catch(Exception e){
-       return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Upload failed", e.getMessage()));
-        }
     }
 
     @GetMapping("/image/download/{imageId}")
@@ -50,25 +47,19 @@ public class ImageController {
     }
 
     @PutMapping("/image/{imageId}/update")
-    public ResponseEntity<ApiResponse> updateImage(@PathVariable Long imageId, @RequestBody MultipartFile file){
-        try{
+    public ResponseEntity<ApiResponse> updateImage(@PathVariable Long imageId, @RequestBody MultipartFile file) throws SQLException, IOException {
+
             imageService.updateImageById(file, imageId);
             return ResponseEntity
                     .ok()
                     .body(new ApiResponse("Updated Successfully", null));
-        }catch(Exception e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
-        }
+
     }
     @DeleteMapping("/image/{imageId}/delete")
     public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long imageId){
-        try{
             imageService.deleteImageById(imageId);
             return ResponseEntity
                     .ok()
                     .body(new ApiResponse("Deleted Successfully", null));
-        }catch(Exception e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
-        }
     }
 }

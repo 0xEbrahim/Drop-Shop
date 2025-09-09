@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.rowset.serial.SerialBlob;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,16 +75,11 @@ public class ImageService implements IImageService{
     }
 
     @Override
-    public void updateImageById(MultipartFile file, Long id) {
-        try{
+    public void updateImageById(MultipartFile file, Long id) throws IOException, SQLException {
             Image image = getImageById(id);
             image.setFileName(file.getOriginalFilename());
             image.setFileType(file.getContentType());
             image.setBlob(new SerialBlob(file.getBytes()));
             imageRepository.save(image);
-        }catch(Exception e){
-            throw new RuntimeException(e.getMessage());
-        }
-
     }
 }
