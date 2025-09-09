@@ -12,9 +12,9 @@ public class ExceptionResponse {
     private HttpStatus status;
     private String message;
 
-    public ExceptionResponse(LocalDateTime timestamp,HttpStatus status, String message) {
+    public ExceptionResponse(HttpStatus status, String message) {
         this.message = message;
         this.status = status;
-        this.timestamp = timestamp;
+        this.timestamp = LocalDateTime.now();
     }
 }
