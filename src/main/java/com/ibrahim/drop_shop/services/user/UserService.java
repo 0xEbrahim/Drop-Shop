@@ -39,7 +39,6 @@ public class UserService implements IUserService{
         if(userRepository.existsByEmail(dto.getEmail())){
             throw new AlreadyExistsException("Email already exists");
         }
-
         User user = User
                 .builder()
                 .firstName(dto.getFirstName())
