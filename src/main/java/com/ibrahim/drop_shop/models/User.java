@@ -3,6 +3,7 @@ package com.ibrahim.drop_shop.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.NaturalId;
 
 import java.util.List;
 
@@ -21,6 +22,8 @@ public class User {
 
     private String lastName;
 
+    @NaturalId
+    @Column(unique = true)
     private String email;
 
     private String password;
