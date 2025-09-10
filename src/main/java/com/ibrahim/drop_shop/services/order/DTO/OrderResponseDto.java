@@ -1,11 +1,8 @@
 package com.ibrahim.drop_shop.services.order.DTO;
 
+import com.ibrahim.drop_shop.DTOs.AttachedProductDto;
+import com.ibrahim.drop_shop.DTOs.AttachedUserDto;
 import com.ibrahim.drop_shop.enums.OrderStatus;
-import com.ibrahim.drop_shop.models.Product;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -23,6 +20,8 @@ public class OrderResponseDto {
     private OrderStatus orderStatus;
 
     private Set<OrdersItemViaOrder> orderItems;
+
+    private AttachedUserDto user;
 }
 
 @Data
@@ -33,12 +32,6 @@ class OrdersItemViaOrder {
 
     private int quantity;
 
-    private ProductViaOrderItem product;
+    private AttachedProductDto product;
 }
 
-@Data
-class ProductViaOrderItem {
-    private Long id;
-    private String name;
-    private BigDecimal price;
-}
