@@ -25,6 +25,10 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartItem> cartItems;
 
+    @OneToOne(mappedBy = "cart")
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public void addItem(CartItem item) {
         cartItems.add(item);
         item.setCart(this);
