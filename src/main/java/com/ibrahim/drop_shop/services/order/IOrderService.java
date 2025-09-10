@@ -1,5 +1,8 @@
 package com.ibrahim.drop_shop.services.order;
 
-public interface IOrderService {
+import com.ibrahim.drop_shop.services.order.DTO.OrderResponseDto;
 
+public interface IOrderService {
+    OrderResponseDto placeOrder(Long id);
+    OrderResponseDto getOrderById(Long id);
 }
