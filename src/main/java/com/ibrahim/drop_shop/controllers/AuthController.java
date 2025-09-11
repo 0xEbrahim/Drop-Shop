@@ -2,6 +2,7 @@ package com.ibrahim.drop_shop.controllers;
 
 
 import com.ibrahim.drop_shop.services.auth.AuthService;
+import com.ibrahim.drop_shop.services.auth.DTO.LoginUserDto;
 import com.ibrahim.drop_shop.services.user.DTO.CreateUserDto;
 import com.ibrahim.drop_shop.utils.ApiResponse;
 import org.springframework.http.HttpStatus;
@@ -25,5 +26,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse> register(@RequestBody CreateUserDto createUserDto) {
         String created = authService.register(createUserDto);
         return ApiResponse.sendResponse(created, HttpStatus.CREATED, null);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse> login(@RequestBody  LoginUserDto dto) {
+        String token = authService.login(dto);
+        return ApiResponse.sendResponse("Login successfully", HttpStatus.OK, token);
     }
 }

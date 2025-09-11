@@ -30,8 +30,7 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('USER', 'ADMIN') DEFAULT 'USER'")
-    private UserRole role;
+    private UserRole role = UserRole.USER;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
