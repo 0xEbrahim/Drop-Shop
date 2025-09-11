@@ -10,16 +10,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 public class ShopConfig {
 
-    @Value("${password.rounds:10}")
-    private int rounds;
 
     @Bean
     public ModelMapper createModelMapper() {
         return new ModelMapper();
     }
 
-    @Bean
-    public BCryptPasswordEncoder createPasswordEncoder() {
-        return new BCryptPasswordEncoder(rounds);
-    }
+
 }

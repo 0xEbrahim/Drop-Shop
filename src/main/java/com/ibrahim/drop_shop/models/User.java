@@ -1,6 +1,7 @@
 package com.ibrahim.drop_shop.models;
 
 
+import com.ibrahim.drop_shop.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.NaturalId;
@@ -28,8 +29,11 @@ public class User {
 
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('USER', 'ADMIN') DEFAULT 'USER'")
+    private UserRole role;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "cart_id")
     private Cart cart;
 
     @OneToMany(mappedBy = "user",  cascade = CascadeType.ALL, orphanRemoval = true)
