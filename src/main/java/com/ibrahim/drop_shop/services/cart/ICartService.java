@@ -1,5 +1,6 @@
 package com.ibrahim.drop_shop.services.cart;
 
+import com.ibrahim.drop_shop.models.Cart;
 import com.ibrahim.drop_shop.services.cart.DTO.CartResponseDto;
 
 import java.math.BigDecimal;
@@ -10,4 +11,5 @@ public interface ICartService {
      List<CartResponseDto> getAllCarts();
      BigDecimal getCartTotalPrice(Long id);
     void clearCart(Long id);
+    Cart getCartByUserId(Long userId);
 }
