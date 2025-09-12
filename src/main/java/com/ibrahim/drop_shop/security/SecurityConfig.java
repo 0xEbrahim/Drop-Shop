@@ -28,11 +28,12 @@ public class SecurityConfig {
     private String prefix;
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
+    private final CustomJwtEntryPoint customJwtEntryPoint;
     @Autowired
-    public SecurityConfig(CustomUserDetailsService userDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter, CustomJwtEntryPoint customJwtEntryPoint) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customJwtEntryPoint = customJwtEntryPoint;
     }
 
 
@@ -65,7 +66,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, prefix + "/carts").hasAnyRole(UserRole.ADMIN.name(), UserRole.USER.name())
                 ).sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(customJwtEntryPoint));
         return http.build();
     }
 
