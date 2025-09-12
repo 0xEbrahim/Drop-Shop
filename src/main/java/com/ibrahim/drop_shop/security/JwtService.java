@@ -32,20 +32,14 @@ public class JwtService {
     private Long refreshExpiresIn;
 
     public String generateAccessToken(String email) {
-        Map<String, Object> claims = new HashMap<>();
-        return Jwts
-                .builder()
-                .claims()
-                .add(claims)
-                .subject(email)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + accessExpiresIn))
-                .and()
-                .signWith(getAccessSecretKey())
-                .compact();
+      return buildToken(getAccessSecretKey(), email, accessExpiresIn);
     }
 
     public String generateRefreshToken(String email){
+        return buildToken(getRefreshSecretKey(), email, refreshExpiresIn);
+    }
+
+    private String buildToken(SecretKey key, String email, Long expire) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts
                 .builder()
@@ -53,9 +47,9 @@ public class JwtService {
                 .add(claims)
                 .subject(email)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + refreshExpiresIn))
+                .expiration(new Date(System.currentTimeMillis() + expire))
                 .and()
-                .signWith(getRefreshSecretKey())
+                .signWith(key)
                 .compact();
     }
 
@@ -69,29 +63,39 @@ public class JwtService {
         return Keys.hmacShaKeyFor(decode);
     }
 
-    public String extractEmail(String token) {
-        return extractClaims(token, Claims::getSubject);
+    public String extractAccessEmail(String token) {
+        return extractClaims(token, Claims::getSubject, getAccessSecretKey());
     }
 
-    public <T> T extractClaims(String token, Function<Claims, T> provider){
-        Claims claims = extractClaims(token);
+    public String extractRefreshEmail(String token){
+        return extractClaims(token, Claims::getSubject, getRefreshSecretKey());
+    }
+
+    public <T> T extractClaims(String token, Function<Claims, T> provider, SecretKey secret){
+        Claims claims = extractClaims(token, secret);
         return provider.apply(claims);
     }
 
-    public Claims extractClaims(String token) {
+    public Claims extractClaims(String token, SecretKey secretKey) {
         return Jwts.
                 parser()
-                .verifyWith(getAccessSecretKey())
+                .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
     }
 
-    public boolean isValidToken(String token, CustomUserDetails userDetails) {
-        return (Objects.equals(extractEmail(token), userDetails.getUsername()) && isNotExpired(token));
+    public boolean isValidAccessToken(String token, CustomUserDetails userDetails) {
+        return (Objects.equals(extractAccessEmail(token), userDetails.getUsername())
+                && isNotExpired(token, getAccessSecretKey()));
     }
 
-    private boolean isNotExpired(String token) {
-        return extractClaims(token, Claims::getExpiration).after(new Date());
+    public boolean isValidRefreshToken(String token, CustomUserDetails userDetails){
+        return (Objects.equals(extractAccessEmail(token), userDetails.getUsername())
+                && isNotExpired(token, getRefreshSecretKey()));
+    }
+
+    private boolean isNotExpired(String token, SecretKey secretKey) {
+        return extractClaims(token, Claims::getExpiration, secretKey).after(new Date());
     }
 }
