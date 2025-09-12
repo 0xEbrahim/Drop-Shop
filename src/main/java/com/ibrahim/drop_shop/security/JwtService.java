@@ -32,15 +32,27 @@ public class JwtService {
     private Long refreshExpiresIn;
 
     public String generateAccessToken(String email) {
-      return buildToken(getAccessSecretKey(), email, accessExpiresIn);
+        Map<String, Object> claims = new HashMap<>();
+        return buildToken(claims, getAccessSecretKey(), email, accessExpiresIn);
     }
 
     public String generateRefreshToken(String email){
-        return buildToken(getRefreshSecretKey(), email, refreshExpiresIn);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "refresh-token");
+        return buildToken(claims,getRefreshSecretKey(), email, refreshExpiresIn);
     }
 
-    private String buildToken(SecretKey key, String email, Long expire) {
-        Map<String, Object> claims = new HashMap<>();
+    public boolean isRefreshToken(String token) {
+        Claims claims = Jwts
+                .parser()
+                .verifyWith(getRefreshSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.get("type").equals("refresh-token");
+    }
+
+    private String buildToken(Map<String, Object> claims, SecretKey key, String email, Long expire) {
         return Jwts
                 .builder()
                 .claims()

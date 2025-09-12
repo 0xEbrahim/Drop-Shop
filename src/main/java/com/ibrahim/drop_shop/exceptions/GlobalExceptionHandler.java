@@ -1,9 +1,11 @@
 package com.ibrahim.drop_shop.exceptions;
 
 
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.io.IOException;
@@ -11,6 +13,24 @@ import java.sql.SQLException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<ExceptionResponse> handleSignatureExceptions(SignatureException e){
+        ExceptionResponse response = new ExceptionResponse(HttpStatus.UNAUTHORIZED, "Invalid or expired JsonWebToken.");
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ExceptionResponse> handleAuthenticationExceptions(AuthenticationException e){
+        ExceptionResponse response = new ExceptionResponse( HttpStatus.FORBIDDEN, e.getMessage());
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @ExceptionHandler(UnAuthorizedException.class)
+    public ResponseEntity<ExceptionResponse> handleUnAuthorizedExceptions(UnAuthorizedException e) {
+        ExceptionResponse response = new ExceptionResponse(HttpStatus.UNAUTHORIZED, e.getMessage());
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleNotFoundExceptions(NotFoundException e) {
