@@ -1,6 +1,7 @@
 package com.ibrahim.drop_shop.exceptions;
 
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -9,10 +10,23 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.sql.SQLException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ExceptionResponse> handleExpiredJWTExceptions(ExpiredJwtException e){
+        ExceptionResponse response = new ExceptionResponse(HttpStatus.FORBIDDEN, "You don't have the access to this resource");
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponse> handleAccessDeniedExceptions(AccessDeniedException e) {
+        ExceptionResponse response = new ExceptionResponse(HttpStatus.UNAUTHORIZED, "You don't have the access to this resource");
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
     @ExceptionHandler(SignatureException.class)
     public ResponseEntity<ExceptionResponse> handleSignatureExceptions(SignatureException e){
@@ -64,7 +78,7 @@ public class GlobalExceptionHandler {
             if ("23505".equals(sqlState)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body(new ExceptionResponse(HttpStatus.CONFLICT,"Duplicate entry: " + sqlException.getMessage()));
-            } else if ("08001".equals(sqlState) || "08006".equals(sqlState)) { // Connection failed
+            } else if ("08001".equals(sqlState) || "08006".equals(sqlState)) {
                 return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                         .body(new ExceptionResponse(HttpStatus.SERVICE_UNAVAILABLE,"Database connection failed"));
             }
